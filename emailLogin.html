@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>QQ邮箱登录</title>
+    <style>
+        body{display:flex;justify-content:center;align-items:center;height:100vh;background:#f5f5f5;}
+        .box{width:360px;background:white;padding:40px;border-radius:10px;box-shadow:0 0 10px #0000001a;}
+        input{width:100%;padding:12px;margin:10px 0;border:1px solid #ddd;border-radius:5px;}
+        button{width:100%;padding:12px;background:#409eff;color:white;border:none;border-radius:5px;margin-top:10px;cursor:pointer;}
+        #msg{text-align:center;margin-top:15px;color:red;}
+    </style>
+</head>
+<body>
+<div class="box">
+    <h2>QQ邮箱登录</h2>
+    <input id="email" placeholder="请输入QQ邮箱">
+    <button onclick="sendCode()">发送验证码</button>
+    <input id="code" placeholder="请输入验证码">
+    <button onclick="login()">登录</button>
+    <div id="msg"></div>
+</div>
+
+<script>
+    function sendCode() {
+        let email = document.getElementById("email").value;
+        fetch("http://localhost:8080/api/sendEmailCode", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: email })
+        }).then(res => res.json()).then(data => {
+            document.getElementById("msg").innerText = data.msg;
+        });
+    }
+
+    function login() {
+        let email = document.getElementById("email").value;
+        let code = document.getElementById("code").value;
+        fetch("http://localhost:8080/api/emailLogin", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: email, code: code })
+        }).then(res => res.json()).then(data => {
+            let msg = document.getElementById("msg");
+            if (data.code === 200) {
+                msg.style.color = "green";
+            }
+            msg.innerText = data.msg;
+        });
+    }
+</script>
+</body>
+</html>
